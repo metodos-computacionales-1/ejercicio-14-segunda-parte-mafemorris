@@ -19,6 +19,7 @@ void escribe(string archivo, T* datos, int n_dat){
 }
 
 void rk4 (double* v, double* x, double k, double m, double lambda, double h, int pasos);
+void euler(double* x, double* v, double h, double k, double m, double lambda, int pasos);
 double dx(double x, double k, double m, double lambda);
 double dv(double v);
 
@@ -27,6 +28,7 @@ int main(){
     double k = 100;
     double m = 2;
     double h = 0.01;
+    double gamma = 2;
     double x0 = 0;
     double xf = 10;
     int pasos = (xf-x0)/h;
@@ -34,11 +36,21 @@ int main(){
     double* x = new double[pasos];
     double* v = new double[pasos];
 
-    rk4(v,x,k,m,lambda,h,pasos);
-
+    euler(x,v,h,k,m,lambda,pasos);
     escribe("x.txt",x,pasos);
     escribe("v.txt",v,pasos);
 
+
+    double* xrk4 = new double[pasos];
+    double* vrk4 = new double[pasos];
+
+    rk4(vrk4,xrk4,k,m,lambda,h,pasos);
+
+    escribe("xrk4.txt",xrk4,pasos);
+    escribe("vrk4.txt",vrk4,pasos);
+
+    delete[] xrk4;
+    delete[] vrk4;
     delete[] x;
     delete[] v;
 
@@ -50,6 +62,17 @@ double dx(double x, double k, double m, double lambda){
 
 double dv(double v){
     return v;
+}
+
+void euler(double* x, double* v, double h, double k, double m, double lambda, int pasos){
+    x[0] = 1; //condiciones iniciales
+    v[0] = 1;
+
+    for(int i=1; i<pasos; i++){
+        x[i] = x[i-1] + h*dx(x[i-1],k,m,lambda); 
+        v[i] = v[i-1] + h*dv(v[i-1]);
+        cout << x[i] << " " << v[i] << endl;
+    }
 }
 
 void rk4 (double* v, double* x, double k, double m, double lambda, double h, int pasos){
